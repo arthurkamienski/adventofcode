@@ -4,6 +4,12 @@ from heapq import *
 # constant for distance calculations
 INF = 9999999
 
+class TileUnreachable(Exception):
+    pass
+
+class RoundFinished(Exception):
+    pass
+
 class Unit:
     """Representation of a unit on the map"""
     def __init__(self, char, tile, damage=3):
@@ -30,6 +36,10 @@ class Unit:
     # attack on given unit
     def attack(self, unit):
         unit.hp = unit.hp - self.damage
+
+    # choose a target out of a list of enemies based on health and position
+    def choose_target(self, enemies):
+        return min([(e.hp, e) for e in enemies])[1]
 
 class MapTile:
     """One square on the grid representing the map"""
@@ -96,6 +106,7 @@ class Map:
     def adjacent_to(self, tiles):
         neighbours = []
 
+        # flexibility to use lists of tiles or a single tile as parameter
         if not type(tiles) is list:
             tiles = [tiles]
 
@@ -231,15 +242,7 @@ class Combat:
 
         return enemies
 
-    # calculates the outcome of the fight
-    def outcome(self):
-        # rounds * total hp left
-        return self.rounds * sum([u.hp for u in self.units])
 
-    # checks if all of the units of a team are dead
-    def victory(self):
-        return self.elfs == [] or self.goblins == []
-    
     # returns a list of enemies adjacent to the unit
     def adjacent_enemies(self, unit):
         # list of adjacent units
@@ -253,6 +256,9 @@ class Combat:
         enemy_tiles = self.map.to_tiles(self.enemies_of(unit))
         in_range  = self.map.free_adjacent_to(enemy_tiles)
 
+        if in_range == []:
+            raise TileUnreachable
+
         # distances to the tile
         distances = [(self.map.path(unit.tile, t), t) for t in in_range]
 
@@ -260,8 +266,7 @@ class Combat:
 
         # there are no reachable tiles
         if distance == INF:
-            # value error because I am lazy
-            raise ValueError
+            raise TileUnreachable
 
         return target
 
@@ -279,80 +284,98 @@ class Combat:
         return tile
 
     def round(self):
+        # sorts units based on position
         self.units.sort()
 
+        # creates a copy of the list to remove the dead units without
+        # influencing the iteration
         units_copy = self.units[:]
-        i = 0
 
         for u in units_copy:
-            if self.enemies_of(u) != []:
-                i = i + 1
+            if not self.victory():
                 if not u.dead():
-                    self.print_map()
                     enemies = self.adjacent_enemies(u)
+
                     if enemies == []:
                         try:
                             next_tile = self.next_tile(u)
                             u.move_to(next_tile)
-                        except ValueError:
+                            enemies = self.adjacent_enemies(u)
+                        except TileUnreachable:
                             pass
                         
-                        enemies = self.adjacent_enemies(u)
-
                     if enemies != []:
-                        target = min(enemies)
+                        target = u.choose_target(enemies)
                         u.attack(target)
 
                         if target.dead():
                             self.remove_corpse(target)
             else:
-                break
+                raise RoundFinished
 
-        if i == len(units_copy):
-            self.rounds = self.rounds + 1
+        self.rounds = self.rounds + 1
+
+    # checks if all of the units of a team are dead
+    def victory(self):
+        return self.elfs == [] or self.goblins == []
 
     def fight(self):
+        print('Fight broke out...')
         while not self.victory():
-            self.round()
-            print(self.rounds, end='\r')
-        print()
+            try:
+                self.round()
+            except RoundFinished:
+                pass
+            print(f'Round {self.rounds}', end='\r')
 
         self.summary()
 
-    def summary(self):
-        print('Battle Outcome:')
-        print('Rounds: ', self.rounds)
-        print('Total health: ', sum([u.hp for u in self.units]))
-        print('Outcome: ', self.outcome())
-
-    def elf_dies(self):
+    def elves_live(self):
         elf_num = len(self.elfs)
 
-        while elf_num == len(self.elfs) and not self.victory():
-            print(self.rounds, end='\r')
-            self.round()
+        while len(self.elfs) == elf_num and not self.victory():
+            try:
+                print(self.rounds, end='\r')
+                self.round()
+            except RoundFinished:
+                pass
         print()
-
         return elf_num != len(self.elfs)
+        
+    def summary(self):
+        print('Battle Outcome:')
+        print(f'Rounds: {self.rounds}')
+        print(f'Total health: {sum([u.hp for u in self.units])}')
+        print(f'Outcome: {self.outcome()}\n')
+    
+    # calculates the outcome of the fight
+    def outcome(self):
+        # rounds * total hp left
+        return self.rounds * sum([u.hp for u in self.units])
 
+# Checks the outcome of each fight until it finds the minimum attack for all of the elves to live
+# Brute force: butterfly effect might make binary search imprecise
+# Minimum attack = 25
 def min_attack(raw_data):
     print('Searching minimum attack')
-    for attack in range(25, 200):
+    for attack in range(4, 200):
         print('Attack =', attack, ':')
         combat = Combat(raw_data, attack)
         
-        if not combat.elf_dies():
+        if not combat.elves_live():
             print('Elves won. No elves dead.')
             combat.summary()
             break
         else:
-            print('An elf died.\n')
+            print('An elf died.')
+            print('-'*30)
 
 def main():
     with open('input.txt', 'r') as raw_data:
+        # allows multiple readings
         map_layout = [l for l in raw_data]
-        Combat(map_layout).print_map()
         Combat(map_layout).fight()
+        print('-'*30)
         min_attack(map_layout)
 
 if __name__ == '__main__':
