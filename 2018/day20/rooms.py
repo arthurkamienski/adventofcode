@@ -27,9 +27,6 @@ def find_branch(instructions):
             paths[stack].append(paths.pop())
         else:
             paths[stack].append(i)
-        # print(i, stack)
-    # print(paths[0])
-    print(merge(paths[0])[0])
 
     return merge(paths[0])[0]
 
@@ -50,7 +47,6 @@ def merge(instructions):
 
     
     return branches
-
 
 def make_map(instructions, front, rooms):
 

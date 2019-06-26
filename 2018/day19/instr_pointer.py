@@ -14,7 +14,6 @@ def extract(data):
 
     return ip, instrs
 
-
 class CPU:
     def __init__(self, pointer, instrs):
         self.registers = [0, 0, 0, 0, 0, 0]
@@ -118,7 +117,6 @@ class CPU:
         self.eqri(A, self.registers[B], C)
 
     def execute_instrs(self):
-
         try:
             while True:
                 self.next()

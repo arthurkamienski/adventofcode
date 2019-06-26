@@ -242,7 +242,6 @@ class Combat:
 
         return enemies
 
-
     # returns a list of enemies adjacent to the unit
     def adjacent_enemies(self, unit):
         # list of adjacent units

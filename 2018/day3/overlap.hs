@@ -9,8 +9,9 @@ main=do
 
   let ps = map pointsOf cs
 
-  print $ head cs
-  print $ length $ Map.filter ((>= 2) . length) $ countPoints ps
+  print $ length $ Map.filter ((>= 2) . length) $ countPoints empty ps
+  print $ Map.filter ((== 1) . length) $ countPoints empty ps
+  
 
 interpret :: String -> (Int, [(Int, Int)])
 interpret s = (id, coords)
@@ -31,8 +32,11 @@ pointsOf (id, claim) = (id, [(x, y) | x <- rangeW, y <- rangeH])
     h = claim !! 1
     w = claim !! 0
 
-countPoints :: (Int, [(Int, Int)]) -> Map (Int, Int) [Int]
-countPoints (id,cs) = countPoints' cs empty
+countPoints :: Map (Int, Int) [Int] -> [(Int, [(Int, Int)])] -> Map (Int, Int) [Int]
+countPoints m [] = m
+countPoints m (p:ps) = countPoints (countPoints' cs m) ps
   where
+    id = fst p
+    cs = snd p
     countPoints' [] mp = mp
     countPoints' (c:cs) mp = countPoints' cs $ insertWith (++) c [id] mp
