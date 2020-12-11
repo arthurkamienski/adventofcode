@@ -5,19 +5,20 @@
 (defn to-loc [code min-loc max-loc]
   (if (= (count code) 0)
     max-loc
-    (do
-      (def first-half (contains? #{\F \L} (first code)))
-      (def mid-loc (quot (+ min-loc max-loc) 2))
+    (let [
+      first-half (contains? #{\F \L} (first code))
+      mid-loc (quot (+ min-loc max-loc) 2)]
       (if first-half
         (recur (rest code) min-loc mid-loc)
         (recur (rest code) mid-loc max-loc)))))
 
 (defn to-seat [code]
-  (def row-code (take 7 code))
-  (def col-code (drop 7 code))
-  (def row-loc (to-loc row-code 0 127))
-  (def col-loc (to-loc col-code 0 7))
-  [row-loc col-loc])
+  (let [
+    row-code (take 7 code)
+    col-code (drop 7 code)
+    row-loc (to-loc row-code 0 127)
+    col-loc (to-loc col-code 0 7)]
+  [row-loc col-loc]))
 
 (defn read-input [p]
   (map to-seat (->
@@ -28,10 +29,11 @@
   (+ (* row 8) col))
 
 (defn find-seat [ids]
-  (def sorted (sort ids))
-  (def indexes (iterate inc (first sorted)))
-  (def zipped (map vector sorted indexes))
-  (second (first (filter #(not= (first %) (second %)) zipped))))
+  (let [
+    sorted (sort ids)
+    indexes (iterate inc (first sorted))
+    zipped (map vector sorted indexes)]
+  (second (first (filter #(not= (first %) (second %)) zipped)))))
 
 (def input (read-input "input.txt"))
 (def ids (map #(apply to-id %) input))

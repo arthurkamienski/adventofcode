@@ -5,8 +5,8 @@
 (defn read-input [p]
   (letfn [
           (to-inst [line]
-            (def split (str/split line #" "))
-            {:op (first split) :value (Integer. (second split))})]
+            (let [split (str/split line #" ")]
+            {:op (first split) :value (Integer. (second split))}))]
   (->>
        (slurp p)
        (str/split-lines)
@@ -16,8 +16,8 @@
 
 (defn run [insts]
   (letfn [(recurs-run [ip acc visited]
-    (def curr-inst (get insts ip))
-    (let [{op :op value :value} curr-inst]
+    (let [curr-inst (get insts ip)
+          {op :op value :value} curr-inst]
       (if (contains? insts ip)
         (if (contains? visited ip)
           {:loop true :acc acc}
@@ -29,21 +29,20 @@
     (recurs-run 0 0 #{})))
 
 (defn find-corrupted [insts]
-  (def all-change-insts (keys (filter #(not= "acc" (get (second %) :op)) input)))
-
+  (let [all-change-insts (keys (filter #(not= "acc" (get (second %) :op)) insts))]
   (letfn [(find-recurs [change-insts]
-    (def change-pos (first change-insts))
-    (def to-change (get insts change-pos))
-    (def changed (assoc to-change :op (if (= "jmp" (get to-change :op)) "nop" "jmp")))
-    (def new-insts (assoc insts change-pos changed))
-    (def run-result (run new-insts))
+            (let [
+                change-pos (first change-insts)
+                to-change (get insts change-pos)
+                changed (assoc to-change :op (if (= "jmp" (get to-change :op)) "nop" "jmp"))
+                new-insts (assoc insts change-pos changed)
+                run-result (run new-insts)]
     (if (get run-result :loop)
       (recur (rest change-insts))
-      run-result))]
-    
-    (find-recurs all-change-insts)))
+      run-result)))]
+    (find-recurs all-change-insts))))
 
 
 (def input (read-input "input.txt"))
-(println (run input))
-(println (find-corrupted input))
+(println (get (run input) :acc))
+(println (get (find-corrupted input) :acc))

@@ -11,13 +11,13 @@
     (sort)))
 
 (defn search-pair-recur [numbers i j]
- (def lower  (nth numbers i))
- (def higher (nth numbers j))
- (def sum (+ lower higher))
+  (let [lower  (nth numbers i)
+        higher (nth numbers j)
+        sum (+ lower higher)]
  (cond
    (= sum 2020) (* lower higher)
    (> sum 2020) (recur numbers i (- j 1))
-   (< sum 2020) (recur numbers (+ i 1) j)))
+   (< sum 2020) (recur numbers (+ i 1) j))))
 
 (defn search-pair [numbers]
   (search-pair-recur numbers 0 (- (count numbers) 1) ))
@@ -34,9 +34,10 @@
       (recur numbers ts))))
 
 (defn search-trio [numbers]
-  (def nRange (range (count numbers)))
-  (def combs (for [x nRange y nRange z nRange] (vector x y z)))
-  (find-trio numbers combs))
+  (let [
+        nRange (range (count numbers))
+        combs (for [x nRange y nRange z nRange] (vector x y z))]
+  (find-trio numbers combs)))
 
 (println (search-pair (read-input)))
 (println (search-trio (read-input)))

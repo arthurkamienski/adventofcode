@@ -3,10 +3,10 @@
 
 (defn read-input [p]
   (letfn [(process-pass [p]
-            (def fields (str/split p #"\n|\ "))
-            (def records
-                   (map #(str/split % #":") fields))
-            (apply merge (map #(hash-map (keyword (first %)) (second %)) records)))]
+            (let [
+              fields (str/split p #"\n|\ ")
+              records (map #(str/split % #":") fields)]
+            (apply merge (map #(hash-map (keyword (first %)) (second %)) records))))]
   (->>
        (->
          (slurp p)
@@ -14,31 +14,31 @@
        (map process-pass))))
 
 (defn all-fields? [p]
-  (def fields '(:byr :iyr :eyr :hgt :hcl :ecl :pid))
-  (every? p fields))
+  (let [fields '(:byr :iyr :eyr :hgt :hcl :ecl :pid)]
+  (every? p fields)))
 
 (defn valid? [p]
   (letfn [(check-year [y s f]
-            (def year (get p y))
-            (def match (re-matches #"\d{4}" year))
+            (let [
+              year (get p y)
+              match (re-matches #"\d{4}" year)]
             (if match
-              (do
-                (def intYear (Integer. year))
+              (let [intYear (Integer. year)]
                 (and (>= intYear s) (<= intYear f)))
-              false))
+              false)))
           (check-re [k re]
-            (def field (get p k))
-            (not (nil? (re-matches re field))))
+            (let [field (get p k)]
+            (not (nil? (re-matches re field)))))
           (check-hgt []
-            (def hgt (get p :hgt))
-            (def match (re-matches #"(\d{2,3})(cm|in)" hgt))
+            (let [
+              hgt (get p :hgt)
+              match (re-matches #"(\d{2,3})(cm|in)" hgt)]
             (if match
-              (do
-               (def hgtInt (Integer. (nth match 1)))
+              (let [hgtInt (Integer. (nth match 1))]
                (if (= (nth match 2) "cm")
                 (and (>= hgtInt 150) (<= hgtInt 193))
                 (and (>= hgtInt 59) (<= hgtInt 76))))
-              false))]
+              false)))]
         (every? true? [(check-year :byr 1920 2002)
           (check-year :iyr 2010 2020)
           (check-year :eyr 2020 2030)

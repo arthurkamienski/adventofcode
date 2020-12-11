@@ -9,15 +9,16 @@
 
 (defn count-trees [m i j]
   (letfn [(count-path [m x y ts]
-            (def height (count m))
-            (def width  (count (nth m 0)))
-            (def currPos (nth (nth m y) (rem x width)))
-            (def trees (if (= currPos \.)
+            (let [
+              height (count m)
+              width  (count (nth m 0))
+              currPos (nth (nth m y) (rem x width))
+              trees (if (= currPos \.)
                          ts
-                         (+ ts 1)))
+                         (+ ts 1))]
             (if (>= y (- height 1))
               trees
-              (recur m (+ x i) (+ y j) trees)))]
+              (recur m (+ x i) (+ y j) trees))))]
     (count-path m 0 0 0)))
 
 (def slopes ['(1 1) '(3 1) '(5 1) '(7 1) '(1 2)])
@@ -27,5 +28,5 @@
 
 (def results (map partial-count slopes))
 
-(println results)
+(println (reduce max results))
 (println (reduce * results))
