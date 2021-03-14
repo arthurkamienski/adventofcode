@@ -1,16 +1,26 @@
 import IntCodeComputer
 import qualified Data.Map.Strict as Map
+import qualified Data.HashPSQ as Q
+import qualified Data.Set as Set
+import Data.List (sort)
 
-data Tile = Empty | Wall | OxTank | Unexplored | Robot deriving (Show)
-data Direction = North | South | East | West deriving (Show)
+data Tile = Empty | Wall | OxTank deriving (Show, Eq)
+data Direction = North | South | East | West deriving (Show, Eq, Ord)
 type Coord  = (Integer, Integer)
 type TileMap = Map.Map Coord Tile
-data State = State {pos :: Coord, tiles :: TileMap} deriving (Show)
+type Queue = Q.HashPSQ Coord Int ProgramState 
+
+type Path = [Direction]
 
 main = do
   p <- readProgramFile "input.txt"
-  tilemap <- explore p
-  print $ tilemap
+  let (q, map, movesToTank) = findO2Tank p
+  let fullMap = exploreAll q map
+  let oxCoord = case Q.findMin q of
+                  Nothing -> (0, 0)
+                  Just (c, _, _) -> c
+  print movesToTank
+  print $ timeToFill fullMap oxCoord
 
 toCommand :: Direction -> Integer
 toCommand North = 1
@@ -18,89 +28,70 @@ toCommand South = 2
 toCommand West  = 3
 toCommand East  = 4
 
-toDir :: Integer -> Direction
-toDir 1 = North
-toDir 2 = South
-toDir 3 = West
-toDir 4 = East
+toTile :: Integer -> Tile
+toTile 0 = Wall
+toTile 1 = Empty
+toTile 2 = OxTank
 
-oppositeDir :: Direction -> Direction
-oppositeDir South = North
-oppositeDir West = East
-oppositeDir East = West
-oppositeDir North = South
-
-explore :: Program -> IO TileMap
-explore p = exploreLoop progState robotState
-  where
-    robotState = State (0, 0) (Map.singleton (0, 0) Empty)
-    progState = startState p []
-    exploreLoop s r = do
-      let i = getInput r
-
-      let state = execUntilInput s [toCommand i]
-      let out = head $ output state
-      let robotState = changeState r i out
-      let nextState = case out of
-          0 -> state {output = []}
-          _ -> backState {output = []}
-            where
-              backState = execUntilInput state [toCommand $ oppositeDir i]
-
-      printRoom robotState
-
-      case out of
-        2 -> return $ tiles r
-        _ -> exploreLoop nextState robotState
-
-decideInput :: State -> IO Direction
-decideInput r = do
-  l <- getLine
-  let value = read l :: Int
-  return $ toDir $ toInteger value
-
-getInput :: State -> Direction
-getInput r = head $ filter isUnexplored [North, South, West, East]
-  where
-    nextPos d = dirToPos (pos r) d
-    isUnexplored d = Map.member () (tiles r)
-    unexplored = head $ filter isUnexplored [North, South, West, East]
-    dir
-      | unexplored == [] = notWall
-      | otherwise = unexplored
-
-printRoom :: State -> IO ()
-printRoom s = mapM_ print [[showTile (x, y) | x <- [minX..maxX]] | y <- [minY..maxY]]
-  where
-    ts = tiles s
-    withBot = Map.insert (pos s) Robot ts
-    showTile coord = toChar $ Map.findWithDefault Unexplored coord withBot
-    toChar t = case t of
-                 Robot -> 'O'
-                 Unexplored -> ' '
-                 Empty  -> '.'
-                 Wall   -> '#'
-                 OxTank -> '%'
-    allCoords = Map.keys withBot
-    xs = map fst allCoords
-    ys = map snd allCoords
-    minX = minimum xs
-    maxX = maximum xs
-    minY = minimum ys
-    maxY = maximum ys
-
-dirToPos :: Coord -> Direction -> Coord
-dirToPos (x, y) d = case d of
+updateCoord :: Coord -> Direction -> Coord
+updateCoord (x, y) d = case d of
   North -> (x, y-1)
   South -> (x, y+1)
   East  -> (x+1, y)
   West  -> (x-1, y)
 
-changeState :: State -> Direction -> Integer -> State
-changeState r d o = case o of
-  0 -> r {tiles = insert Wall}
-  1 -> r {pos = targetPos, tiles = insert Empty}
-  2 -> r {pos = targetPos, tiles = insert OxTank}
+findO2Tank :: Program -> (Queue, TileMap, Int)
+findO2Tank p = exploreUntilFound (startQ, tileMap)
   where
-    targetPos = dirToPos (pos r) d
-    insert t = Map.insert targetPos t (tiles r)
+    tileMap = Map.singleton (0, 0) Empty
+    state   = startState p []
+    stateWithOutput = state {output = [0]}
+    startQ  = Q.singleton (0, 0) 0 stateWithOutput
+    exploreUntilFound (q, m) = case Q.findMin q of
+                          Nothing -> (q, m, -1)
+                          Just (_, p, nextState) -> steps
+                            where
+                              currPos = toTile $ head $ output nextState
+                              steps
+                                | currPos == OxTank = (q, m, p)
+                                | otherwise = exploreUntilFound $ expandNext q m
+
+exploreAll :: Queue -> TileMap -> TileMap
+exploreAll q m = exploreUntilFound (q, m)
+  where
+    exploreUntilFound (q, m) = case Q.findMin q of
+                           Nothing -> m
+                           Just _ -> exploreUntilFound $ expandNext q m
+
+expandNext :: Queue -> TileMap -> (Queue, TileMap)
+expandNext queue map =
+  case Q.minView queue of
+    Nothing -> (Q.empty, map)
+    Just (coord, prio, curr, newQ) -> foldl expand (newQ, map) [North, South, West, East]
+      where
+        currNoOutput = curr {output = []}
+        expand (q, m) d = case m Map.!? nextCoord of
+                            Just _  -> (q, m)
+                            Nothing -> (insertedQ, updatedM)
+          where
+            nextState = execUntilInput currNoOutput [toCommand d]
+            nextCoord = updateCoord coord d
+            out = toTile $ head $ output nextState
+            updatedM  = Map.insert nextCoord out m
+            insertedQ
+              | out /= Wall  = Q.insert nextCoord (prio + 1) nextState q
+              | otherwise = q
+
+timeToFill :: TileMap -> Coord -> Int
+timeToFill m c = timeToFill' [c] visited (-1)
+  where
+    visited = Set.singleton c
+    timeToFill' [] _ i = i
+    timeToFill' cs v i = timeToFill' nextCs newV (i+1)
+      where
+        newV = foldl (\a b -> Set.insert b a) v nextCs
+        nextCs = notWall . notVisited $ concat $ map neighbors cs
+        neighbors (x, y) = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+        notWall cs = filter (\a -> (m Map.! a) /= Wall) cs
+        notVisited cs = filter (\a -> not $ Set.member a v) cs
+

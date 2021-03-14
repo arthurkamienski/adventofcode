@@ -6,6 +6,7 @@ module IntCodeComputer
   , execUntilOutput
   , execUntilInput
   , startState
+  , empty
   , Op (Stop)
   , ProgramState (output, input, op)
   , Program
@@ -55,6 +56,9 @@ data ProgramState = ProgramState {
                      base    :: Base,
                      op      :: Op,
                      params  :: Params} deriving (Show)
+
+empty :: ProgramState
+empty = ProgramState Map.empty 0 [] [] 0 Stop []
 
 opCodes = Map.fromList
  [( 1, OpCode Add     3),
