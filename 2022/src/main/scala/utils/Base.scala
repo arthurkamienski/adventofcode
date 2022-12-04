@@ -36,5 +36,6 @@ trait Base:
     def toChunks: Seq[String] = s.split("\n\n")
     def toLines: Seq[String] = s.linesIterator.toSeq
     def toIntList: Seq[Int] = toLines.toIntList
+    def parseCSV: Seq[Seq[String]] = toLines.map(_.split(","))
 
   extension (l: Seq[String]) def toIntList: Seq[Int] = l.map(_.toInt)
