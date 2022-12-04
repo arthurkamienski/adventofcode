@@ -1,3 +1,7 @@
+Cargo.lock
 target/
 .idea/
+project/
+.bsp/
 .sbt/
+build.sbt
