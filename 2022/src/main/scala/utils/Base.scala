@@ -17,8 +17,8 @@ trait Base:
 
   def isTest: Boolean
 
-  def part1: Int
-  def part2: Int
+  def part1: Any
+  def part2: Any
 
   def readInput(fileName: String): String =
     val source = Source.fromFile(fileName)
