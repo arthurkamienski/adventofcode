@@ -35,7 +35,7 @@ object SupplyStack extends Base:
   def stacks: StackMap =
     val crateLines = cratesInput.toLines.reverse
     val crateRows = crateLines.tail
-      .map(row =>
+      .map { row =>
         val getCrateFromString = (s: String) => s.filter(_.isUpper).headOption
 
         row
@@ -45,15 +45,16 @@ object SupplyStack extends Base:
           .collect { case (Some(crate), i) =>
             (i, crate)
           }
-      )
+      }
 
-    crateRows.foldLeft(Map.empty[Int, Seq[Crate]]): (stackMap, crates) =>
+    crateRows.foldLeft(Map.empty[Int, Seq[Crate]]) { case (stackMap, crates) =>
       crates.foldLeft(stackMap) { case (prevStacks, (index, crate)) =>
         val oldStack = prevStacks.getOrElse(index + 1, Seq.empty[Crate])
         val updatedStack = crate +: oldStack
 
         prevStacks + (index + 1 -> updatedStack)
       }
+    }
 
   def moves: Seq[Move] = movesInput.toLines.map(Move.apply)
 
