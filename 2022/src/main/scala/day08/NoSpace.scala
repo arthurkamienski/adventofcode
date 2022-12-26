@@ -1,6 +1,6 @@
 package day08
 
-import utils.Base
+import utils.{Base, InputSource}
 
 enum Direction(val coord: Coord):
   case Top extends Direction((0, -1))
@@ -12,12 +12,11 @@ enum Direction(val coord: Coord):
   def unary_- = reverse
 
 object Direction:
-  def coordToDirection(coord: Coord): Direction = coord match {
+  def coordToDirection(coord: Coord): Direction = coord match
     case Coord(0, -1) => Top
     case Coord(0, 1)  => Bot
     case Coord(-1, 0) => Left
     case Coord(1, 0)  => Right
-  }
 
 import Direction._
 
@@ -49,8 +48,8 @@ case class TreeGrid(heightGrid: HeightGrid):
       dir: Direction,
       viewGrid: ViewGrid,
       distFromHeight: Map[Int, Int]
-  ): ViewGrid = heightGrid.get(coord) match {
-    case Some(treeHeight) => {
+  ): ViewGrid = heightGrid.get(coord) match
+    case Some(treeHeight) =>
       val viewDistance =
         distFromHeight.view.filterKeys(_ >= treeHeight).values.min
 
@@ -68,9 +67,7 @@ case class TreeGrid(heightGrid: HeightGrid):
         newViewGrid,
         newDistFromHeight
       )
-    }
     case None => viewGrid
-  }
 
   def defineVisibility(
       coord: Coord,
@@ -83,8 +80,8 @@ case class TreeGrid(heightGrid: HeightGrid):
       dir: Direction,
       visGrid: VisibilityGrid,
       maxHeight: Int
-  ): VisibilityGrid = heightGrid.get(coord) match {
-    case Some(treeHeight) => {
+  ): VisibilityGrid = heightGrid.get(coord) match
+    case Some(treeHeight) =>
       val isHigher = treeHeight > maxHeight
 
       val nextCoord = coord.moveTo(dir)
@@ -96,9 +93,7 @@ case class TreeGrid(heightGrid: HeightGrid):
       }
 
       defineVisibility(nextCoord, dir, newVisGrid, nextMaxHeight)
-    }
     case None => visGrid
-  }
 
   def traverseGridInDirection[Grid](
       dir: Direction,
@@ -106,7 +101,7 @@ case class TreeGrid(heightGrid: HeightGrid):
       startCoord: Int => Coord,
       updateFunction: (Coord, Direction, Grid) => Grid
   )(grid: Grid): Grid =
-    (0 to maxCoord).foldLeft(grid) { case (prevGrid, c) =>
+    (0 to maxCoord).foldLeft(grid) { (prevGrid, c) =>
       updateFunction(startCoord(c), dir, prevGrid)
     }
 
@@ -129,8 +124,7 @@ case class TreeGrid(heightGrid: HeightGrid):
   def highestScenicScore: Int = scenicScores.values.max
 
 object TreeHouse extends Base:
-  def dirName: String = "day08"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day08")
 
   val heightGrid: Map[Coord, Int] = input.toLines.zipWithIndex.flatMap {
     case (row, j) =>

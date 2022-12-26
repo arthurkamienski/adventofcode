@@ -1,10 +1,9 @@
 package day01
 
-import utils.Base
+import utils.{Base, InputSource}
 
 object Calories extends Base:
-  def dirName: String = "day01"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day01")
 
   def caloriesPerElf: Seq[Int] = input.toChunks.map(_.toIntList.sum)
 

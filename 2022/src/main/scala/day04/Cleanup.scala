@@ -1,6 +1,6 @@
 package day04
 
-import utils.Base
+import utils.{Base, InputSource}
 
 case class Section(definition: String):
   val Array(start: Int, end: Int) = definition.split("-").map(_.toInt)
@@ -18,8 +18,7 @@ case class Section(definition: String):
     isFullyContainedIn(other) || overlapsLeft(other) || overlapsRight(other)
 
 object Cleanup extends Base:
-  def dirName: String = "day04"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day04")
 
   def sections: Seq[(Section, Section)] = input.parseCSV.map {
     case Seq(first, second) => (Section(first), Section(second))

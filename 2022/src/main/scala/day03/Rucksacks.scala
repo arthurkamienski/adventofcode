@@ -1,6 +1,6 @@
 package day03
 
-import utils.Base
+import utils.{Base, InputSource}
 
 case class Item(identifier: Char):
   def intValue: Int = identifier.toInt
@@ -15,8 +15,7 @@ case class Rucksack(items: Seq[Item]):
     comp1.toSet.intersect(comp2.toSet).head
 
 object Rucksacks extends Base:
-  def dirName: String = "day03"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day02")
 
   def rucksacks: Seq[Rucksack] =
     input.toLines.map(s => Rucksack(s.map(Item.apply)))
@@ -25,13 +24,13 @@ object Rucksacks extends Base:
 
   override def part2: Int = rucksacks
     .grouped(3)
-    .map { group =>
+    .map(group =>
       group
         .map(_.items.toSet)
         .reduce(_.intersect(_))
         .head
         .priority
-    }
+    )
     .sum
 
   @main def main = run()

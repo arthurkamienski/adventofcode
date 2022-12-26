@@ -2,31 +2,39 @@ package utils
 
 import scala.io.Source
 
-trait Base:
-  val input: String =
-    if isTest then readInput(testInputName)
-    else readInput(inputName)
-
-  def dirName: String
-
+case class InputSource(
+    dirName: String,
+    isTest: Boolean = false,
+    testNumber: Int = 1
+):
   def projectDir: String = System.getProperty("user.dir")
   def pwd: String = s"$projectDir/src/main/scala"
+  def baseDir: String = s"$pwd/$dirName"
 
-  def testInputName: String = s"$pwd/$dirName/test_input.txt"
-  def inputName: String = s"$pwd/$dirName/input.txt"
+  def testInputName: String = if testNumber > 1 then
+    s"$baseDir/test_input_$testNumber.txt"
+  else s"$baseDir/test_input.txt"
 
-  def isTest: Boolean
+  def inputName: String = s"$baseDir/input.txt"
 
-  def part1: Any
-  def part2: Any
+  def path: String =
+    if isTest then testInputName
+    else inputName
 
-  def readInput(fileName: String): String =
-    val source = Source.fromFile(fileName)
+  def read: String =
+    val source = Source.fromFile(path)
     val lines = source.mkString
 
     source.close()
 
     lines
+
+trait Base:
+  def inputSource: InputSource
+  def input: String = inputSource.read
+
+  def part1: Any
+  def part2: Any
 
   def run(): Unit =
     println(part1)

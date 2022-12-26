@@ -1,10 +1,10 @@
 package day06
 
-import utils.Base
+import utils.{Base, InputSource}
 
 import scala.collection.immutable.Queue
 
-case class CommsDevice(signal: String) {
+case class CommsDevice(signal: String):
   def indexedSignal: Seq[(Char, Int)] = signal.zipWithIndex
 
   def findFirstNonRepeating(seqSize: Int): Int =
@@ -23,11 +23,9 @@ case class CommsDevice(signal: String) {
 
   def findStartOfPacket: Int = findFirstNonRepeating(4)
   def findStartOfMessage: Int = findFirstNonRepeating(14)
-}
 
 object Tuning extends Base:
-  def dirName: String = "day06"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day06")
 
   override def part1: Any = CommsDevice(input).findStartOfPacket
 

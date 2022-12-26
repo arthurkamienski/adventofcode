@@ -1,6 +1,6 @@
 package day02
 
-import utils.Base
+import utils.{Base, InputSource}
 
 enum Shape(val points: Int):
   case Rock extends Shape(1)
@@ -32,7 +32,7 @@ object Outcome:
 
 import Outcome.*
 
-case class Round(definition: String) {
+case class Round(definition: String):
   val (col1: Char, col2: Char) = (definition.head, definition.last)
 
   def opponentShape: Shape = col1 match
@@ -63,11 +63,9 @@ case class Round(definition: String) {
 
   def points(shape: Shape, outcome: Outcome): Int =
     shape.points + outcome.points
-}
 
 object RockPaperScissors extends Base:
-  def dirName: String = "day02"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day02")
 
   def rounds: Seq[Round] = input.toLines.map(Round.apply)
 

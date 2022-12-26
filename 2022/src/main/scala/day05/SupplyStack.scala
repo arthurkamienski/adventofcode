@@ -1,6 +1,6 @@
 package day05
 
-import utils.Base
+import utils.{Base, InputSource}
 
 type Crate = Char
 type Stack = Seq[Crate]
@@ -28,15 +28,14 @@ case class Move(definition: String):
     move(moveFn)(stacks)
 
 object SupplyStack extends Base:
-  def dirName: String = "day05"
-  def isTest: Boolean = false
+  override def inputSource: InputSource = InputSource("day05")
 
   val Array(cratesInput: String, movesInput: String) = input.split("\n\n")
 
   def stacks: StackMap =
     val crateLines = cratesInput.toLines.reverse
     val crateRows = crateLines.tail
-      .map { row =>
+      .map(row =>
         val getCrateFromString = (s: String) => s.filter(_.isUpper).headOption
 
         row
@@ -46,16 +45,15 @@ object SupplyStack extends Base:
           .collect { case (Some(crate), i) =>
             (i, crate)
           }
-      }
+      )
 
-    crateRows.foldLeft(Map.empty[Int, Seq[Crate]]) { case (stackMap, crates) =>
+    crateRows.foldLeft(Map.empty[Int, Seq[Crate]]): (stackMap, crates) =>
       crates.foldLeft(stackMap) { case (prevStacks, (index, crate)) =>
         val oldStack = prevStacks.getOrElse(index + 1, Seq.empty[Crate])
         val updatedStack = crate +: oldStack
 
         prevStacks + (index + 1 -> updatedStack)
       }
-    }
 
   def moves: Seq[Move] = movesInput.toLines.map(Move.apply)
 

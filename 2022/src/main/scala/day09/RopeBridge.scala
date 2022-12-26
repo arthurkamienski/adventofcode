@@ -1,6 +1,6 @@
 package day09
 
-import utils.Base
+import utils.{Base, InputSource}
 
 case class Knot(x: Int, y: Int):
   def move(dir: Char): Knot = dir match
@@ -44,12 +44,13 @@ case class Rope(knots: Seq[Knot], prevTails: Seq[Knot]):
 
 object RopeBridge extends Base:
   def dirName: String = "day09"
-  def isTest: Boolean = false
 
-  val moves: Seq[Char] = input.toLines.flatMap { line =>
+  override def inputSource: InputSource = InputSource("day09")
+
+  val moves: Seq[Char] = input.toLines.flatMap(line =>
     val Array(char, n) = line.split(" ")
     (1 to n.toInt).map(_ => char.head)
-  }
+  )
 
   override def part1: Any = Rope(2).move(moves).tailPositions
   override def part2: Any = Rope(10).move(moves).tailPositions
