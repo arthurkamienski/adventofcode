@@ -2,9 +2,12 @@ package day13
 
 import utils.{Base, InputSource}
 
+import scala.annotation.{tailrec, targetName}
+
 enum Order(val value: Int):
   case Ordered extends Order(1)
   case Unordered extends Order(-1)
+  @targetName("questionMark")
   case ? extends Order(0)
 
 import Order._
@@ -24,7 +27,7 @@ object Packet:
 
   def parse(s: String): Packet = parseNext(s)._1.head
 
-  def parseNext(s: String): (Seq[Packet], String) = s match
+  private def parseNext(s: String): (Seq[Packet], String) = s match
     case ""                 => (Seq(), "")
     case s if s.head == ']' => (Seq(), s.tail)
     case s if s.head == ',' => parseNext(s.tail)
@@ -43,18 +46,19 @@ case class Packet(content: Either[Int, Seq[Packet]]):
   def toSeqPacket: Packet = Packet(Right(Seq(Packet(content))))
 
 object DistressSignal extends Base:
-  override def inputSource: InputSource = InputSource("day13", isTest = false)
+  override def inputSource: InputSource = InputSource("day13")
 
-  val packets: Seq[Packet] = input.toLines
+  private val packets: Seq[Packet] = input.toLines
     .filter(_ != "")
     .map(Packet.parse)
 
-  def packetPairs: Seq[(Packet, Packet)] = packets
+  private def packetPairs: Seq[(Packet, Packet)] = packets
     .grouped(2)
-    .map(packets => (packets(0), packets(1)))
+    .map(packets => (packets.head, packets(1)))
     .toSeq
 
-  def compareLists(left: Seq[Packet], right: Seq[Packet]): Order =
+  @tailrec
+  private def compareLists(left: Seq[Packet], right: Seq[Packet]): Order =
     (left.headOption, right.headOption) match
       case (None, Some(_)) => Ordered
       case (Some(_), None) => Unordered
@@ -65,7 +69,8 @@ object DistressSignal extends Base:
         if res == ? then compareLists(left.tail, right.tail)
         else res
 
-  def compare(left: Packet, right: Packet): Order =
+  @tailrec
+  private def compare(left: Packet, right: Packet): Order =
     (left.content, right.content) match
       case (Left(a), Left(b)) =>
         if a > b then Unordered else if a < b then Ordered else ?
@@ -81,7 +86,7 @@ object DistressSignal extends Base:
       .map { case (_, index) => index + 1 }
       .sum
 
-  val dividerPackets: Set[Packet] = Set("[[2]]", "[[6]]").map(Packet.parse)
+  private val dividerPackets: Set[Packet] = Set("[[2]]", "[[6]]").map(Packet.parse)
 
   override def part2: Any =
     (packets ++ dividerPackets)
@@ -92,4 +97,4 @@ object DistressSignal extends Base:
       .map { case (_, index) => index + 1 }
       .product
 
-  @main def main = run()
+  @main def main(): Unit = run()

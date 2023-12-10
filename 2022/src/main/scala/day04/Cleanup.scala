@@ -8,10 +8,10 @@ case class Section(definition: String):
   def isFullyContainedIn(other: Section): Boolean =
     start >= other.start && end <= other.end
 
-  def overlapsRight(other: Section): Boolean =
+  private def overlapsRight(other: Section): Boolean =
     other.start <= start && other.end >= start
 
-  def overlapsLeft(other: Section): Boolean =
+  private def overlapsLeft(other: Section): Boolean =
     start <= other.start && end >= other.start
 
   def overlapsWith(other: Section): Boolean =
@@ -20,7 +20,7 @@ case class Section(definition: String):
 object Cleanup extends Base:
   override def inputSource: InputSource = InputSource("day04")
 
-  def sections: Seq[(Section, Section)] = input.parseCSV.map {
+  private def sections: Seq[(Section, Section)] = input.parseCSV.map {
     case Seq(first, second) => (Section(first), Section(second))
   }
 
@@ -32,4 +32,4 @@ object Cleanup extends Base:
     s1.overlapsWith(s2)
   }
 
-  @main def main = run()
+  @main def main(): Unit = run()

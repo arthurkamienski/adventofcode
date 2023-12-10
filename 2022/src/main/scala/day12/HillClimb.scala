@@ -2,6 +2,7 @@ package day12
 
 import utils.{Base, InputSource}
 
+import scala.collection.mutable
 import scala.collection.mutable.PriorityQueue
 
 case class Coord(i: Int, j: Int):
@@ -14,8 +15,8 @@ case class Coord(i: Int, j: Int):
 
   def dist(other: Coord): Int = (i - other.i).abs + (j - other.j).abs
 
-given Conversion[Tuple2[Int, Int], Coord] with
-  def apply(c: Tuple2[Int, Int]): Coord = Coord(c._1, c._2)
+given Conversion[(Int, Int), Coord] with
+  def apply(c: (Int, Int)): Coord = Coord(c._1, c._2)
 
 case class GridPosition(
     representation: Char,
@@ -48,7 +49,7 @@ object HeightMap:
 
     val links = positions.values
       .map(p =>
-        p -> p.coord.neighbors.flatMap(positions.get).filter(p.hasPathTo).toSeq
+        p -> p.coord.neighbors.flatMap(positions.get).filter(p.hasPathTo)
       )
       .toMap
 
@@ -72,7 +73,7 @@ case class HeightMap(
 ):
   def bestPathFromStart: Path = bestPath(start)
 
-  def possibleStartPoints: Seq[GridPosition] = links
+  private def possibleStartPoints: Seq[GridPosition] = links
     .filter { case (pos, neighbs) =>
       pos.representation == 'a' && neighbs.map(_.representation).contains('b')
     }
@@ -82,8 +83,8 @@ case class HeightMap(
   def bestPathFromLowestElevation: Path =
     possibleStartPoints.map(bestPath).minBy(_.steps)
 
-  def bestPath(from: GridPosition): Path =
-    val queue = PriorityQueue(Path(from.dist(end), 0, from, Seq()))((a, b) =>
+  private def bestPath(from: GridPosition): Path =
+    val queue = mutable.PriorityQueue(Path(from.dist(end), 0, from, Seq()))((a, b) =>
       if a.priority > b.priority then 1
       else if a.priority < b.priority then -1
       else 0
@@ -112,11 +113,11 @@ case class HeightMap(
     queue.head
 
 object HillClimb extends Base:
-  override def inputSource: InputSource = InputSource("day12", isTest = false)
+  override def inputSource: InputSource = InputSource("day12")
 
-  val heightMap: HeightMap = HeightMap(input.toLines.map(_.toSeq))
+  private val heightMap: HeightMap = HeightMap(input.toLines.map(_.toSeq))
 
   override def part1: Any = heightMap.bestPathFromStart.steps
   override def part2: Any = heightMap.bestPathFromLowestElevation.steps
 
-  @main def main = run()
+  @main def main(): Unit = run()

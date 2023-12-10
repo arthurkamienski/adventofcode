@@ -5,11 +5,11 @@ import utils.{Base, InputSource}
 type MonkeyNumber = Int
 
 object MonkeyInTheMiddle extends Base:
-  override def inputSource: InputSource = InputSource("day11", isTest = false)
+  override def inputSource: InputSource = InputSource("day11")
 
-  def notes: Seq[Seq[String]] = input.toChunks.map(_.toLines)
+  private def notes: Seq[Seq[String]] = input.toChunks.map(_.toLines)
 
-  def createMonkeys(bored: Boolean): Map[MonkeyNumber, Monkey] =
+  private def createMonkeys(bored: Boolean): Map[MonkeyNumber, Monkey] =
     val monkeys = notes
       .map(Monkey.fromNotes(bored))
 
@@ -20,11 +20,11 @@ object MonkeyInTheMiddle extends Base:
       .map(monkey => monkey.number -> monkey)
       .toMap
 
-  def boredMonkeys: Map[MonkeyNumber, Monkey] = createMonkeys(true)
-  def monkeys: Map[MonkeyNumber, Monkey] = createMonkeys(false)
+  private def boredMonkeys: Map[MonkeyNumber, Monkey] = createMonkeys(true)
+  private def monkeys: Map[MonkeyNumber, Monkey] = createMonkeys(false)
 
   override def part1: Any = Game(0, boredMonkeys).playRounds(20).monkeyBusiness
 
   override def part2: Any = Game(0, monkeys).playRounds(10000).monkeyBusiness
 
-  @main def main = run()
+  @main def main(): Unit = run()

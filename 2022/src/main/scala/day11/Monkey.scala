@@ -16,7 +16,7 @@ case class Monkey(
     bored: Boolean,
     throws: Int = 0
 ):
-  def getBored(item: Item): Item = if bored then item / 3 else identity(item)
+  private def getBored(item: Item): Item = if bored then item / 3 else identity(item)
 
   lazy val thrownItems: Seq[(MonkeyNumber, Item)] = items.map { item =>
     val itemWithNewWorryLevel = getBored(inspect(item))
@@ -34,7 +34,7 @@ case class Monkey(
     throws + thrownItems.length
   )
 
-  def withItems(items: Seq[Item]): Monkey =
+  private def withItems(items: Seq[Item]): Monkey =
     Monkey(number, items, inspect, chooseMonkeyToThrow, bored, throws)
 
   def grabItem(item: Item): Monkey = withItems(items :+ item)
@@ -67,7 +67,7 @@ object Monkey:
         case "+" => a + b
         case "*" => a * b
 
-    (x => f(firstVal(x), secondVal(x)))
+    x => f(firstVal(x), secondVal(x))
 
   private def parseTest(definition: Seq[String]): Decider =
     val Seq(test, condTrue, condFalse) = definition

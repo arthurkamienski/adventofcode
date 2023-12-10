@@ -30,11 +30,11 @@ case class FileSystem(
     structure: Map[String, Seq[String]],
     data: Map[String, DirContent]
 ):
-  val diskSpace = 70000000
-  val requiredSpace = 30000000
+  private val diskSpace = 70000000
+  private val requiredSpace = 30000000
 
-  lazy val freeSpace = diskSpace - getSize("/")
-  lazy val missingSpace = requiredSpace - freeSpace
+  private lazy val freeSpace = diskSpace - getSize("/")
+  lazy val missingSpace: Int = requiredSpace - freeSpace
 
   def addContent(currDir: Dir, content: Seq[DirContent]): FileSystem =
     val contentNames = content.map(_.name)
@@ -56,7 +56,7 @@ case class FileSystem(
       println(file.name)
       throw Exception()
 
-  def getSize(name: String): Int = data(name) match
+  private def getSize(name: String): Int = data(name) match
     case dir: Dir   => structure(dir.name).map(getSize).sum
     case file: File => file.size
 
@@ -76,7 +76,7 @@ case class Terminal(
     currDir: Dir,
     fileSystem: FileSystem
 ):
-  def executeNextCommand: Terminal = commands.head match
+  private def executeNextCommand: Terminal = commands.head match
     case "$ ls" =>
       val (content, nextCommands) = commands.tail.span(_.head != '$')
       val newStructure = fileSystem.addContent(
@@ -92,7 +92,7 @@ case class Terminal(
         case dirName => s"${currDir.name}/$dirName"
       moveInto(fileSystem.getDir(dir))
 
-  def moveInto(dir: Dir): Terminal =
+  private def moveInto(dir: Dir): Terminal =
     Terminal(commands.tail, dir, fileSystem)
 
   def buildFileSystem: FileSystem =
@@ -101,13 +101,13 @@ case class Terminal(
 object NoSpace extends Base:
   override def inputSource: InputSource = InputSource("day07")
 
-  val commandList: Seq[String] = input.toLines
-  val fileSystem = Terminal(commandList).buildFileSystem
-  val dirSizes = fileSystem.dirs.map(fileSystem.getSize)
+  private val commandList: Seq[String] = input.toLines
+  private val fileSystem = Terminal(commandList).buildFileSystem
+  private val dirSizes = fileSystem.dirs.map(fileSystem.getSize)
 
   override def part1: Any = dirSizes.filter(_ <= 100000).sum
 
   override def part2: Any =
-    dirSizes.filter(_ >= fileSystem.missingSpace).sorted.head
+    dirSizes.filter(_ >= fileSystem.missingSpace).min
 
-  @main def main = run()
+  @main def main(): Unit = run()

@@ -2,12 +2,14 @@ package day06
 
 import utils.{Base, InputSource}
 
+import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
 case class CommsDevice(signal: String):
-  def indexedSignal: Seq[(Char, Int)] = signal.zipWithIndex
+  private def indexedSignal: Seq[(Char, Int)] = signal.zipWithIndex
 
-  def findFirstNonRepeating(seqSize: Int): Int =
+  private def findFirstNonRepeating(seqSize: Int): Int =
+    @tailrec
     def find(buffer: Queue[Char], sequence: Seq[(Char, Int)]): Int =
       val (char, charPos) = sequence.head
       val newBuffer = buffer.enqueue(char)
@@ -31,4 +33,4 @@ object Tuning extends Base:
 
   override def part2: Any = CommsDevice(input).findStartOfMessage
 
-  @main def main = run()
+  @main def main(): Unit = run()

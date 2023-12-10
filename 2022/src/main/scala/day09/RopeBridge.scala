@@ -55,4 +55,4 @@ object RopeBridge extends Base:
   override def part1: Any = Rope(2).move(moves).tailPositions
   override def part2: Any = Rope(10).move(moves).tailPositions
 
-  @main def main = run()
+  @main def main(): Unit = run()

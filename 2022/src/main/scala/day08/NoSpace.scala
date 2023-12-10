@@ -2,17 +2,20 @@ package day08
 
 import utils.{Base, InputSource}
 
+import scala.annotation.{tailrec, targetName}
+
 enum Direction(val coord: Coord):
   case Top extends Direction((0, -1))
   case Bot extends Direction((0, 1))
   case Left extends Direction((-1, 0))
   case Right extends Direction((1, 0))
 
-  def reverse: Direction = Direction.coordToDirection(-this.coord)
-  def unary_- = reverse
+  private def reverse: Direction = Direction.coordToDirection(-this.coord)
+  @targetName("negate")
+  def unary_- : Direction = reverse
 
 object Direction:
-  def coordToDirection(coord: Coord): Direction = coord match
+  private def coordToDirection(coord: Coord): Direction = coord match
     case Coord(0, -1) => Top
     case Coord(0, 1)  => Bot
     case Coord(-1, 0) => Left
@@ -20,30 +23,33 @@ object Direction:
 
 import Direction._
 
-given Conversion[Tuple2[Int, Int], Coord] with
-  def apply(c: Tuple2[Int, Int]): Coord = Coord(c._1, c._2)
+given Conversion[(Int, Int), Coord] with
+  def apply(c: (Int, Int)): Coord = Coord(c._1, c._2)
 
 case class Coord(x: Int, y: Int):
   def moveTo(dir: Direction): Coord = this.+(dir.coord)
+  @targetName("sum")
   def +(other: Coord): Coord = Coord(x + other.x, y + other.y)
-  def unary_- = Coord(-x, -y)
+  @targetName("negate")
+  def unary_- : Coord = Coord(-x, -y)
 
 type VisibilityGrid = Map[Coord, Boolean]
 type ViewGrid = Map[Coord, Int]
 type HeightGrid = Map[Coord, Int]
 
 case class TreeGrid(heightGrid: HeightGrid):
-  val maxX = heightGrid.keys.maxBy(_.x).x
-  val maxY = heightGrid.keys.maxBy(_.y).y
+  private val maxX = heightGrid.keys.maxBy(_.x).x
+  private val maxY = heightGrid.keys.maxBy(_.y).y
 
-  def calculateScenicScore(
+  private def calculateScenicScore(
       coord: Coord,
       dir: Direction,
       viewGrid: ViewGrid
   ): ViewGrid =
     calculateScenicScore(coord, dir, viewGrid, (0 to 9).map(_ -> 0).toMap)
 
-  def calculateScenicScore(
+  @tailrec
+  private def calculateScenicScore(
       coord: Coord,
       dir: Direction,
       viewGrid: ViewGrid,
@@ -69,13 +75,14 @@ case class TreeGrid(heightGrid: HeightGrid):
       )
     case None => viewGrid
 
-  def defineVisibility(
+  private def defineVisibility(
       coord: Coord,
       dir: Direction,
       visGrid: VisibilityGrid
   ): VisibilityGrid = defineVisibility(coord, dir, visGrid, -1)
 
-  def defineVisibility(
+  @tailrec
+  private def defineVisibility(
       coord: Coord,
       dir: Direction,
       visGrid: VisibilityGrid,
@@ -95,7 +102,7 @@ case class TreeGrid(heightGrid: HeightGrid):
       defineVisibility(nextCoord, dir, newVisGrid, nextMaxHeight)
     case None => visGrid
 
-  def traverseGridInDirection[Grid](
+  private def traverseGridInDirection[Grid](
       dir: Direction,
       maxCoord: Int,
       startCoord: Int => Coord,
@@ -105,7 +112,7 @@ case class TreeGrid(heightGrid: HeightGrid):
       updateFunction(startCoord(c), dir, prevGrid)
     }
 
-  def traverseGrid[Grid](
+  private def traverseGrid[Grid](
       updateFunction: (Coord, Direction, Grid) => Grid
   ): Grid => Grid = Seq(
     traverseGridInDirection(Bot, maxX, (_, 0), updateFunction),
@@ -114,28 +121,28 @@ case class TreeGrid(heightGrid: HeightGrid):
     traverseGridInDirection(Left, maxY, (maxX, _), updateFunction)
   ).reduce(_.andThen(_))
 
-  val visibility: VisibilityGrid =
+  private val visibility: VisibilityGrid =
     traverseGrid(defineVisibility)(Map.empty[Coord, Boolean])
 
-  val scenicScores: ViewGrid =
+  private val scenicScores: ViewGrid =
     traverseGrid(calculateScenicScore)(Map.empty[Coord, Int])
 
-  def visibleCoords: Int = visibility.values.filter(identity).size
+  def visibleCoords: Int = visibility.values.count(identity)
   def highestScenicScore: Int = scenicScores.values.max
 
 object TreeHouse extends Base:
   override def inputSource: InputSource = InputSource("day08")
 
-  val heightGrid: Map[Coord, Int] = input.toLines.zipWithIndex.flatMap {
+  private val heightGrid: Map[Coord, Int] = input.toLines.zipWithIndex.flatMap {
     case (row, j) =>
       row.zipWithIndex.map { case (height, i) =>
         Coord(i, j) -> height.toString.toInt
       }
   }.toMap
 
-  val treeGrid = TreeGrid(heightGrid)
+  private val treeGrid = TreeGrid(heightGrid)
 
   override def part1: Any = treeGrid.visibleCoords
   override def part2: Any = treeGrid.highestScenicScore
 
-  @main def main = run()
+  @main def main(): Unit = run()

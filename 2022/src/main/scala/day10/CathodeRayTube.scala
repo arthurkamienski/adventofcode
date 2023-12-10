@@ -1,6 +1,5 @@
 package day10
 
-import day10.CathodeRayTube.instructions
 import utils.{Base, InputSource}
 
 trait Instruction:
@@ -31,7 +30,7 @@ case class CPU(
 ):
   def signalStrength(cycle: Int): Int = cycle * history(cycle)
 
-  def drawPixel(cycle: Int, register: Int): Char =
+  private def drawPixel(cycle: Int, register: Int): Char =
     val pixelPos = (cycle - 1) % 40
     val isSpriteInPixel = (register - pixelPos).abs <= 1
 
@@ -58,14 +57,14 @@ object CPU:
     }
 
 object CathodeRayTube extends Base:
-  override def inputSource: InputSource = InputSource("day10", isTest = false)
+  override def inputSource: InputSource = InputSource("day10")
 
-  def instructions: Seq[Instruction] = input.toLines.map(Instruction.fromString)
+  private def instructions: Seq[Instruction] = input.toLines.map(Instruction.fromString)
 
-  def cpu: CPU = CPU.execute(instructions)
+  private def cpu: CPU = CPU.execute(instructions)
 
   override def part1: Any =
     (0 to 5).map(n => 20 + 40 * n).map(cpu.signalStrength).sum
   override def part2: Any = cpu.drawImage
 
-  @main def main = run()
+  @main def main(): Unit = run()

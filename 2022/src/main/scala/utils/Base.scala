@@ -7,15 +7,15 @@ case class InputSource(
     isTest: Boolean = false,
     testNumber: Int = 1
 ):
-  def projectDir: String = System.getProperty("user.dir")
-  def pwd: String = s"$projectDir/src/main/scala"
-  def baseDir: String = s"$pwd/$dirName"
+  private def projectDir: String = System.getProperty("user.dir")
+  private def pwd: String = s"$projectDir/src/main/scala"
+  private def baseDir: String = s"$pwd/$dirName"
 
-  def testInputName: String = if testNumber > 1 then
+  private def testInputName: String = if testNumber > 1 then
     s"$baseDir/test_input_$testNumber.txt"
   else s"$baseDir/test_input.txt"
 
-  def inputName: String = s"$baseDir/input.txt"
+  private def inputName: String = s"$baseDir/input.txt"
 
   def path: String =
     if isTest then testInputName

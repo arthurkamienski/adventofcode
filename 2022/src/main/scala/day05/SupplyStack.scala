@@ -30,13 +30,13 @@ case class Move(definition: String):
 object SupplyStack extends Base:
   override def inputSource: InputSource = InputSource("day05")
 
-  val Array(cratesInput: String, movesInput: String) = input.split("\n\n")
+  private val Array(cratesInput: String, movesInput: String) = input.split("\n\n")
 
-  def stacks: StackMap =
+  private def stacks: StackMap =
     val crateLines = cratesInput.toLines.reverse
     val crateRows = crateLines.tail
       .map { row =>
-        val getCrateFromString = (s: String) => s.filter(_.isUpper).headOption
+        val getCrateFromString = (s: String) => s.find(_.isUpper)
 
         row
           .grouped(4)
@@ -56,7 +56,7 @@ object SupplyStack extends Base:
       }
     }
 
-  def moves: Seq[Move] = movesInput.toLines.map(Move.apply)
+  private def moves: Seq[Move] = movesInput.toLines.map(Move.apply)
 
   override def part1: Any = moves
     .foldLeft(stacks) { case (s, move) =>
@@ -76,4 +76,4 @@ object SupplyStack extends Base:
     .map(_._2.head)
     .mkString
 
-  @main def main = run()
+  @main def main(): Unit = run()

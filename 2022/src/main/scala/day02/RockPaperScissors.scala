@@ -33,27 +33,26 @@ object Outcome:
 import Outcome.*
 
 case class Round(definition: String):
-  val (col1: Char, col2: Char) = (definition.head, definition.last)
+  private val (col1: Char, col2: Char) = (definition.head, definition.last)
 
-  def opponentShape: Shape = col1 match
+  private def opponentShape: Shape = col1 match
     case 'A' => Rock
     case 'B' => Paper
     case 'C' => Scissors
 
-  def shapeFromInput: Shape = col2 match
+  private def shapeFromInput: Shape = col2 match
     case 'X' => Rock
     case 'Y' => Paper
     case 'Z' => Scissors
 
-  def outcomeFromShapes: Outcome =
-    Outcome.fromShapes(opponentShape, shapeFromInput)
+  private def outcomeFromShapes: Outcome = Outcome.fromShapes(opponentShape, shapeFromInput)
 
-  def outcomeFromInput: Outcome = col2 match
+  private def outcomeFromInput: Outcome = col2 match
     case 'X' => Loss
     case 'Y' => Draw
     case 'Z' => Win
 
-  def shapeFromOutcome: Shape = outcomeFromInput match
+  private def shapeFromOutcome: Shape = outcomeFromInput match
     case Draw => opponentShape
     case Win  => opponentShape.isDefeatedBy
     case Loss => opponentShape.defeats
@@ -61,16 +60,16 @@ case class Round(definition: String):
   def part1Points: Int = points(shapeFromInput, outcomeFromShapes)
   def part2Points: Int = points(shapeFromOutcome, outcomeFromInput)
 
-  def points(shape: Shape, outcome: Outcome): Int =
+  private def points(shape: Shape, outcome: Outcome): Int =
     shape.points + outcome.points
 
 object RockPaperScissors extends Base:
   override def inputSource: InputSource = InputSource("day02")
 
-  def rounds: Seq[Round] = input.toLines.map(Round.apply)
+  private def rounds: Seq[Round] = input.toLines.map(Round.apply)
 
   override def part1: Int = rounds.map(_.part1Points).sum
 
   override def part2: Int = rounds.map(_.part2Points).sum
 
-  @main def main = run()
+  @main def main(): Unit = run()
