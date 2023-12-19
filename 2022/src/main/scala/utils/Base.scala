@@ -30,8 +30,10 @@ case class InputSource(
     lines
 
 trait Base:
-  def inputSource: InputSource
-  def input: String = inputSource.read
+  def dirName: String = getClass.getCanonicalName.split("\\.").head
+
+  def input: String = InputSource(dirName).read
+  def testInput: String = InputSource(dirName, isTest = true).read
 
   def part1: Any
   def part2: Any

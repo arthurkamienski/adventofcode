@@ -18,7 +18,6 @@ case class Beacon(x: Int, y: Int, beaconX: Int, beaconY: Int):
     }
 
 object Beacons extends Base:
-  override def inputSource: InputSource = InputSource("day15")
 
   private val beacons: Seq[Beacon] = input.toLines.map { line =>
     val Pattern =

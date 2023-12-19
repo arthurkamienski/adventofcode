@@ -64,7 +64,6 @@ case class Round(definition: String):
     shape.points + outcome.points
 
 object RockPaperScissors extends Base:
-  override def inputSource: InputSource = InputSource("day02")
 
   private def rounds: Seq[Round] = input.toLines.map(Round.apply)
 

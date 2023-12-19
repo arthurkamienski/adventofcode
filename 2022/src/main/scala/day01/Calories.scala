@@ -4,7 +4,6 @@ import utils.{Base, InputSource}
 
 
 object Calories extends Base:
-  override def inputSource: InputSource = InputSource("day01")
 
   private def caloriesPerElf: Seq[Int] = input.toChunks.map(_.toIntList.sum)
 

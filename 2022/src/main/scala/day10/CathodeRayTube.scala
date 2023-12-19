@@ -57,7 +57,6 @@ object CPU:
     }
 
 object CathodeRayTube extends Base:
-  override def inputSource: InputSource = InputSource("day10")
 
   private def instructions: Seq[Instruction] = input.toLines.map(Instruction.fromString)
 

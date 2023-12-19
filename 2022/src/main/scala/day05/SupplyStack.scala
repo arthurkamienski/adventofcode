@@ -28,7 +28,6 @@ case class Move(definition: String):
     move(moveFn)(stacks)
 
 object SupplyStack extends Base:
-  override def inputSource: InputSource = InputSource("day05")
 
   private val Array(cratesInput: String, movesInput: String) = input.split("\n\n")
 

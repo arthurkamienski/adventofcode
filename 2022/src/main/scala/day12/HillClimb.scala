@@ -113,7 +113,6 @@ case class HeightMap(
     queue.head
 
 object HillClimb extends Base:
-  override def inputSource: InputSource = InputSource("day12")
 
   private val heightMap: HeightMap = HeightMap(input.toLines.map(_.toSeq))
 

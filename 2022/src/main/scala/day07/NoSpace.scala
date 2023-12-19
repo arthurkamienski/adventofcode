@@ -99,7 +99,6 @@ case class Terminal(
     if commands.isEmpty then fileSystem else executeNextCommand.buildFileSystem
 
 object NoSpace extends Base:
-  override def inputSource: InputSource = InputSource("day07")
 
   private val commandList: Seq[String] = input.toLines
   private val fileSystem = Terminal(commandList).buildFileSystem

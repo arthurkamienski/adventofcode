@@ -5,7 +5,6 @@ import utils.{Base, InputSource}
 type MonkeyNumber = Int
 
 object MonkeyInTheMiddle extends Base:
-  override def inputSource: InputSource = InputSource("day11")
 
   private def notes: Seq[Seq[String]] = input.toChunks.map(_.toLines)
 

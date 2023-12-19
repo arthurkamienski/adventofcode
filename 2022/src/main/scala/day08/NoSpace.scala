@@ -131,7 +131,6 @@ case class TreeGrid(heightGrid: HeightGrid):
   def highestScenicScore: Int = scenicScores.values.max
 
 object TreeHouse extends Base:
-  override def inputSource: InputSource = InputSource("day08")
 
   private val heightGrid: Map[Coord, Int] = input.toLines.zipWithIndex.flatMap {
     case (row, j) =>

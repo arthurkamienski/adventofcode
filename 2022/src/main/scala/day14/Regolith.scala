@@ -24,7 +24,6 @@ case class Point(x: Int, y: Int):
   def downRight: Point = Point(x + 1, y + 1)
 
 object Regolith extends Base:
-  override def inputSource: InputSource = InputSource("day14")
 
   private val rocks: Set[Point] = input.toLines.flatMap { path =>
     val points = path

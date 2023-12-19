@@ -27,7 +27,6 @@ case class CommsDevice(signal: String):
   def findStartOfMessage: Int = findFirstNonRepeating(14)
 
 object Tuning extends Base:
-  override def inputSource: InputSource = InputSource("day06")
 
   override def part1: Any = CommsDevice(input).findStartOfPacket
 

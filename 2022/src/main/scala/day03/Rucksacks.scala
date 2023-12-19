@@ -15,7 +15,6 @@ case class Rucksack(items: Seq[Item]):
     comp1.toSet.intersect(comp2.toSet).head
 
 object Rucksacks extends Base:
-  override def inputSource: InputSource = InputSource("day03")
 
   private def rucksacks: Seq[Rucksack] =
     input.toLines.map(s => Rucksack(s.map(Item.apply)))

@@ -46,7 +46,6 @@ case class Packet(content: Either[Int, Seq[Packet]]):
   def toSeqPacket: Packet = Packet(Right(Seq(Packet(content))))
 
 object DistressSignal extends Base:
-  override def inputSource: InputSource = InputSource("day13")
 
   private val packets: Seq[Packet] = input.toLines
     .filter(_ != "")

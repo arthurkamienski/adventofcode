@@ -8,7 +8,6 @@ import scala.collection.immutable
 case class Valve(name: String, flowRate: Int)
 
 object Volcanium extends Base:
-  override def inputSource: InputSource = InputSource("day16", isTest = false)
 
   private val parsedInput: Set[(String, Int, Set[String])] =
     input.toLines.toSet.map { line =>

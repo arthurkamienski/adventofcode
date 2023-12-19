@@ -43,9 +43,6 @@ case class Rope(knots: Seq[Knot], prevTails: Seq[Knot]):
   def tailPositions: Int = (tail +: prevTails).toSet.size
 
 object RopeBridge extends Base:
-  def dirName: String = "day09"
-
-  override def inputSource: InputSource = InputSource("day09")
 
   val moves: Seq[Char] = input.toLines.flatMap(line =>
     val Array(char, n) = line.split(" ")
