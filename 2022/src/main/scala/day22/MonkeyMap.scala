@@ -6,6 +6,12 @@ import scala.annotation.tailrec
 
 case class Instruction(distance: Int, rotation: Option[Char])
 
+object Direction:
+  val Up: Direction = Direction(-1, 0)
+  val Right: Direction = Direction(0, 1)
+  val Down: Direction = Direction(1, 0)
+  val Left: Direction = Direction(0, -1)
+
 case class Direction(x: Int, y: Int):
   def rotate(rotation: Option[Char]): Direction =
     rotation match
@@ -14,11 +20,11 @@ case class Direction(x: Int, y: Int):
       case _         => this
 
   def value: Int = (x, y) match
-    case (0, 1)   => 0
-    case (1, 0)   => 1
-    case (0, -1)  => 2
-    case (-1, 0)  => 3
-    case _        => throw new Exception("Invalid direction")
+    case (0, 1)  => 0
+    case (1, 0)  => 1
+    case (0, -1) => 2
+    case (-1, 0) => 3
+    case _       => throw new Exception("Invalid direction")
 
 case class Position(x: Int, y: Int, dir: Direction):
   def rotate(rotation: Option[Char]): Position =
@@ -27,14 +33,17 @@ case class Position(x: Int, y: Int, dir: Direction):
   def finalPassword: Int = (x + 1) * 1000 + (y + 1) * 4 + dir.value
 
 object MonkeyMap extends Base:
-  val trueInput = input // to make it easier to change to test
+  val isTest = false
 
-  val mapInput = trueInput.split("\n\n").head
-  val directionsInput = trueInput.split("\n\n").last
+  private val trueInput: String = if isTest then testInput else input
 
-  val sideLength = if mapInput.toLines.length % 50 == 0 then 50 else 4
+  private val mapInput: String = trueInput.split("\n\n").head
 
-  val quadrants =
+  private val directionsInput: String = trueInput.split("\n\n").last
+
+  val sideLength: Int = if isTest then 4 else 50
+
+  val quadrants: Map[(Int, Int), MapQuadrant] =
     mapInput
       .split("\n\n")
       .head
@@ -67,10 +76,8 @@ object MonkeyMap extends Base:
       }
 
   val path: Seq[Instruction] = {
-    val line = trueInput.split("\n\n").last
-
     """(\d+[RL]?)""".r
-      .findAllIn(line)
+      .findAllIn(directionsInput)
       .map(s =>
         if Set('R', 'L').contains(s.last) then
           Instruction(s.init.toInt, Some(s.last))
@@ -79,17 +86,30 @@ object MonkeyMap extends Base:
       .toSeq
   }
 
-  val startPos =
+  private val startPos: Position =
     val (x, y) = quadrants.toSeq.minBy(_._1)._2.topLeft
-    Position(x, y, Direction(0, 1))
+    Position(x, y, Direction.Right)
 
-  val board = BoardMap(quadrants, sideLength)
+  private val board: BoardMap = BoardMap(quadrants, sideLength)
+
+  private val quadrantConnections =
+    if isTest then QuadrantConnections.testQuadrantConnections
+    else QuadrantConnections.quadrantConnections
+
+  val cube: CubeMap = CubeMap(quadrants, sideLength, quadrantConnections)
 
   override def part1: Any =
-    path.foldLeft(startPos) { case (pos, instruction) =>
-      board.nextPos(pos, instruction)
-    }.finalPassword
+    path
+      .foldLeft(startPos) { case (pos, instruction) =>
+        board.nextPos(pos, instruction)
+      }
+      .finalPassword
 
-  override def part2: Any = 0
+  override def part2: Any =
+    path
+      .foldLeft(startPos) { case (pos, instruction) =>
+        cube.nextPos(pos, instruction)
+      }
+      .finalPassword
 
   @main def main(): Unit = run()
