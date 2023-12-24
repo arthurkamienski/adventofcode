@@ -45,11 +45,15 @@ func (d *day) ReadInputLines() []string {
 }
 
 func (d *day) ReadTestInput() string {
-	fullFileName := d.Dir + d.Name + "/test_input.txt"
-
-	return d.ReadFile(fullFileName)
+	return d.ReadFile("test_input.txt")
 }
 
 func (d *day) ReadTestInputLines() []string {
 	return d.toLines(d.ReadTestInput())
+}
+
+func Check(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
