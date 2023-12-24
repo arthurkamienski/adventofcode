@@ -21,7 +21,10 @@ case class Elf(x: Int, y: Int):
     }
   }.toSet - this
 
-  private def getProposedMove(dir: Direction, otherElves: Set[Elf]): Option[Elf] =
+  private def getProposedMove(
+      dir: Direction,
+      otherElves: Set[Elf]
+  ): Option[Elf] =
     val Direction(dx, dy) = dir
     val directionNeighbors =
       if dx == 0 then neighbors.filter(_.y == (y + dy))
@@ -39,13 +42,17 @@ case class Elf(x: Int, y: Int):
       }.headOption
 
 object Diffusion extends Base:
-  private val elves: Set[Elf] = input.toLines.zipWithIndex.flatMap { (line, y) =>
-    line.zipWithIndex.flatMap { (char, x) =>
-      if char == '#' then Some(Elf(x, y)) else None
-    }
+  private val elves: Set[Elf] = input.toLines.zipWithIndex.flatMap {
+    (line, y) =>
+      line.zipWithIndex.flatMap { (char, x) =>
+        if char == '#' then Some(Elf(x, y)) else None
+      }
   }.toSet
 
-  private def getProposedMoves(round: Int, elves: Set[Elf]): Map[Elf, Set[Elf]] =
+  private def getProposedMoves(
+      round: Int,
+      elves: Set[Elf]
+  ): Map[Elf, Set[Elf]] =
     elves.foldLeft(Map.empty[Elf, Set[Elf]]) { case (moves, elf) =>
       elf.proposeMove(round, elves - elf) match
         case Some(newElf) =>
@@ -53,7 +60,10 @@ object Diffusion extends Base:
         case None => moves
     }
 
-  private def moveElves(elves: Set[Elf], proposedMoves: Map[Elf, Set[Elf]]): Set[Elf] =
+  private def moveElves(
+      elves: Set[Elf],
+      proposedMoves: Map[Elf, Set[Elf]]
+  ): Set[Elf] =
     val movedElves = proposedMoves.filter(_._2.size == 1).map {
       case (elf, elves) => elves.head -> elf
     }
