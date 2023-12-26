@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -56,4 +57,10 @@ func Check(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func MustAtoi(str string) int {
+	num, err := strconv.Atoi(str)
+	Check(err)
+	return num
 }
