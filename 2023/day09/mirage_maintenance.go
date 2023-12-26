@@ -64,6 +64,13 @@ func PrintResult() {
 	today := utils.NewDay("day09")
 	input := today.ReadInputLines()
 
+	histories := parseInput(input)
+
+	part1(histories)
+	part2(histories)
+}
+
+func parseInput(input []string) []*History {
 	histories := make([]*History, len(input))
 
 	for i := 0; i < len(input); i++ {
@@ -74,6 +81,10 @@ func PrintResult() {
 		histories[i] = &History{Nums: nums}
 	}
 
+	return histories
+}
+
+func part1(histories []*History) {
 	acc := 0
 
 	for _, history := range histories {
@@ -81,8 +92,10 @@ func PrintResult() {
 	}
 
 	fmt.Println(acc)
+}
 
-	acc = 0
+func part2(histories []*History) {
+	acc := 0
 
 	for _, history := range histories {
 		acc += history.FindPreviousValue()
