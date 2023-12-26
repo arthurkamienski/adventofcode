@@ -165,6 +165,8 @@ func findStepsToLoop(nodeMap NodeMap, startNode string, directions string) {
 		}
 	}
 
+	_ = visitedEndNodes
+
 	// fmt.Println("Loop found starting in node", startNode, "after", steps, "steps")
 	// fmt.Println("First loop visit was at", firstLoopVisit, "steps in node", currNode)
 	// fmt.Println("Loop length is", steps-firstLoopVisit, "steps")
