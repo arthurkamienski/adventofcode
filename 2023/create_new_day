@@ -1,0 +1,19 @@
+#!/bin/bash
+
+day=$1
+
+mkdir $day
+
+touch $day/input.txt
+touch $day/test_input.txt
+echo "package ${day}
+
+import (
+	\"adventofcode/2023/utils\"
+)
+
+func PrintResult() {
+	today := utils.NewDay(\"${day}\")
+	input := today.ReadInputLines()
+	_ = input
+}" > $day/$day.go
