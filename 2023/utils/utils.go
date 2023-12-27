@@ -64,3 +64,21 @@ func MustAtoi(str string) int {
 	Check(err)
 	return num
 }
+
+func Abs(num int) int {
+	if num < 0 {
+		return -num
+	}
+	return num
+}
+
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func Max(a, b int) int {
+	return -Min(-a, -b)
+}
