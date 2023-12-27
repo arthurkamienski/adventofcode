@@ -12,7 +12,7 @@ func NewSet[T comparable]() *Set[T] {
 	}
 }
 
-func FromSlice[T comparable](slice []T) *Set[T] {
+func NewSetFromSlice[T comparable](slice []T) *Set[T] {
 	s := NewSet[T]()
 	for _, value := range slice {
 		s.Add(value)
@@ -61,6 +61,12 @@ func (s *Set[T]) Union(other *Set[T]) *Set[T] {
 	}
 
 	return union
+}
+
+func (s *Set[T]) InPlaceUnion(other *Set[T]) {
+	for value := range other.values {
+		s.Add(value)
+	}
 }
 
 func (s *Set[T]) Sub(other *Set[T]) *Set[T] {

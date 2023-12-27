@@ -7,10 +7,31 @@ type Coord struct {
 	Y int
 }
 
+func (c Coord) Dx(dx int) Coord {
+	return Coord{
+		X: c.X + dx,
+		Y: c.Y,
+	}
+}
+
+func (c Coord) Dy(dy int) Coord {
+	return Coord{
+		X: c.X,
+		Y: c.Y + dy,
+	}
+}
+
 func (c Coord) Add(other Coord) Coord {
 	return Coord{
 		X: c.X + other.X,
 		Y: c.Y + other.Y,
+	}
+}
+
+func (c Coord) Sub(other Coord) Coord {
+	return Coord{
+		X: c.X - other.X,
+		Y: c.Y - other.Y,
 	}
 }
 

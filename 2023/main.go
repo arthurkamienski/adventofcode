@@ -9,9 +9,10 @@ import (
 	_ "adventofcode/2023/day06"
 	_ "adventofcode/2023/day07"
 	_ "adventofcode/2023/day08"
-	"adventofcode/2023/day09"
+	_ "adventofcode/2023/day09"
+	"adventofcode/2023/day10"
 )
 
 func main() {
-	day09.PrintResult()
+	day10.PrintResult()
 }
