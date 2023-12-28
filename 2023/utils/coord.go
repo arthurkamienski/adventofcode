@@ -7,6 +7,34 @@ type Coord struct {
 	Y int
 }
 
+func UpCoord() Coord {
+	return Coord{
+		X: 0,
+		Y: -1,
+	}
+}
+
+func DownCoord() Coord {
+	return Coord{
+		X: 0,
+		Y: 1,
+	}
+}
+
+func LeftCoord() Coord {
+	return Coord{
+		X: -1,
+		Y: 0,
+	}
+}
+
+func RightCoord() Coord {
+	return Coord{
+		X: 1,
+		Y: 0,
+	}
+}
+
 func NewCoord(x, y int) Coord {
 	return Coord{
 		X: x,
@@ -56,4 +84,23 @@ func (c Coord) Neighbors() *Set[Coord] {
 
 func (c Coord) String() string {
 	return fmt.Sprintf("(%d,%d)", c.X, c.Y)
+}
+
+func (c Coord) ManhattanDistance(other Coord) int {
+	return Abs(c.X-other.X) + Abs(c.Y-other.Y)
+}
+
+func (c Coord) Negate() Coord {
+	return Coord{
+		X: -c.X,
+		Y: -c.Y,
+	}
+}
+
+func (c Coord) XBetween(min, max int) bool {
+	return c.X >= min && c.X <= max
+}
+
+func (c Coord) YBetween(min, max int) bool {
+	return c.Y >= min && c.Y <= max
 }
