@@ -28,6 +28,19 @@ func (s *Set[T]) Contains(value T) bool {
 	return s.values[value]
 }
 
+func (s *Set[T]) IsContainedIn(other *Set[T]) bool {
+	for value := range s.values {
+		if !other.Contains(value) {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *Set[T]) Equals(other *Set[T]) bool {
+	return s.IsContainedIn(other) && other.IsContainedIn(s)
+}
+
 func (s *Set[T]) Remove(value T) {
 	delete(s.values, value)
 }

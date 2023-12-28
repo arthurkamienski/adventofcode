@@ -7,6 +7,13 @@ type Coord struct {
 	Y int
 }
 
+func NewCoord(x, y int) Coord {
+	return Coord{
+		X: x,
+		Y: y,
+	}
+}
+
 func (c Coord) Dx(dx int) Coord {
 	return Coord{
 		X: c.X + dx,
