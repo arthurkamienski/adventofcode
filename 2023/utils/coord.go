@@ -104,3 +104,10 @@ func (c Coord) XBetween(min, max int) bool {
 func (c Coord) YBetween(min, max int) bool {
 	return c.Y >= min && c.Y <= max
 }
+
+func (c Coord) Times(i int) Coord {
+	return Coord{
+		X: c.X * i,
+		Y: c.Y * i,
+	}
+}

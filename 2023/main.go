@@ -18,6 +18,7 @@ import (
 	"adventofcode/2023/day15"
 	"adventofcode/2023/day16"
 	"adventofcode/2023/day17"
+	"adventofcode/2023/day18"
 	"flag"
 )
 
@@ -60,8 +61,8 @@ func main() {
 		day16.PrintResult()
 	case "day17":
 		day17.PrintResult()
-	// case "day18":
-	// 	day18.PrintResult()
+	case "day18":
+		day18.PrintResult()
 	// case "day19":
 	// 	day19.PrintResult()
 	// case "day20":
