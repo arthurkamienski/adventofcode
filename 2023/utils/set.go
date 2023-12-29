@@ -20,6 +20,14 @@ func NewSetFromSlice[T comparable](slice []T) *Set[T] {
 	return s
 }
 
+func (s *Set[T]) Copy() *Set[T] {
+	values := make(map[T]bool)
+	for value := range s.values {
+		values[value] = true
+	}
+	return &Set[T]{values}
+}
+
 func (s *Set[T]) Add(value T) {
 	s.values[value] = true
 }
