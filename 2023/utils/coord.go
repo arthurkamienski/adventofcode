@@ -7,6 +7,15 @@ type Coord struct {
 	Y int
 }
 
+func Directions() []Coord {
+	return []Coord{
+		UpCoord(),
+		DownCoord(),
+		LeftCoord(),
+		RightCoord(),
+	}
+}
+
 func UpCoord() Coord {
 	return Coord{
 		X: 0,
