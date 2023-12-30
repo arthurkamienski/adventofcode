@@ -6,18 +6,18 @@ type Set[T comparable] struct {
 	values map[T]bool
 }
 
-func NewSet[T comparable]() *Set[T] {
-	return &Set[T]{
+func NewSet[T comparable](initValues ...T) *Set[T] {
+	s := &Set[T]{
 		make(map[T]bool),
 	}
-}
-
-func NewSetFromSlice[T comparable](slice []T) *Set[T] {
-	s := NewSet[T]()
-	for _, value := range slice {
+	for _, value := range initValues {
 		s.Add(value)
 	}
 	return s
+}
+
+func NewSetFromSlice[T comparable](slice []T) *Set[T] {
+	return NewSet[T](slice...)
 }
 
 func (s *Set[T]) Copy() *Set[T] {
