@@ -121,3 +121,17 @@ func (s *Set[T]) Values() []T {
 func (s *Set[T]) String() string {
 	return fmt.Sprintf("Set%v", s.Values())
 }
+
+func (s *Set[T]) Take(n int) []T {
+	i := 0
+	vs := make([]T, 0, n)
+
+	for value := range s.values {
+		if i == n {
+			break
+		}
+		vs = append(vs, value)
+		i++
+	}
+	return vs
+}
