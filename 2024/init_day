@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir "day$1"
+
+cat > "day$1/day$1.awk" << EOF
+#!/usr/bin/awk -f
+
+@include "utils.awk"
+EOF
+
+touch "day$1/example.txt"
+touch "day$1/input.txt"
