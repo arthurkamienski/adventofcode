@@ -27,10 +27,6 @@ function find(a) {
     return a;
 }
 
-function coord(x, y) {
-    return x SUBSEP y;
-}
-
 END {
     for (i = 1; i <= NR; i++) {
         for (j = 1; j <= NF; j++) {

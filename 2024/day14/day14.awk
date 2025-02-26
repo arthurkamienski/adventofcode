@@ -5,10 +5,7 @@
 BEGIN {
     width = 101;
     height = 103;
-}
-
-function coord(x, y) {
-    return x "," y;
+    SUBSEP = ",";
 }
 
 match($0, /p=(\-?[0-9]+),(\-?[0-9]+) v=(\-?[0-9]+),(\-?[0-9]+)/, ns) {
@@ -57,20 +54,20 @@ END {
     }
     print acc;
 
-    for (i=271; ; i+=101) {
-        print "After " i " seconds:";
-        delete coords;
-        for (robot in robots) {
-            coords[robots[robot][i % robots[robot]["cycle"]]]++;
-        }
-        for (j=0; j<height; j++) {
-            for (k=0; k<width; k++) {
-                printf "%s", (coord(k, j) in coords) ? coords[coord(k, j)] : ".";
-            }
-            print "";
-        }
-        system("sleep 0.1");
+    # for (i=271; ; i+=101) {
+    #     print "After " i " seconds:";
+    #     delete coords;
+    #     for (robot in robots) {
+    #         coords[robots[robot][i % robots[robot]["cycle"]]]++;
+    #     }
+    #     for (j=0; j<height; j++) {
+    #         for (k=0; k<width; k++) {
+    #             printf "%s", (coord(k, j) in coords) ? coords[coord(k, j)] : ".";
+    #         }
+    #         print "";
+    #     }
+    #     system("sleep 0.1");
 
         # if ((i - 80) % 100 == 0) i = i+=90;
-    }
+    # }
 }

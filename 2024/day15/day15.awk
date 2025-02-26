@@ -2,11 +2,7 @@
 
 @include "utils.awk"
 
-BEGIN { FS = ""; }
-
-function coord(x, y) {
-    return x "," y
-}
+BEGIN { FS = ""; SUBSEP = "," }
 
 /[#\.O@]+/ {
     for(i=0; i<NF; i++) {
