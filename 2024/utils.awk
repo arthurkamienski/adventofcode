@@ -10,7 +10,7 @@ function coord(x, y) {
     return x SUBSEP y;
 }
 
-function get_neighbors(pos, ns, diagonal) {
+function get_neighbors(pos, ns, diagonal,   i, j, x, y, a) {
     split(pos, a, SUBSEP);
     x = a[1];
     y = a[2];
