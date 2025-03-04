@@ -43,6 +43,8 @@ END {
     any_new_lan = 1
     i = 0;
 
+    print "This will take some time because I was too lazy to implement a proper solution. Please wait...";
+
     while(any_new_lan) {
         print "Iteration", i, "| LANs:", length(lan[i]);
         any_new_lan = 0;
