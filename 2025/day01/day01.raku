@@ -9,15 +9,17 @@ grammar Password {
 }
 
 class Decoder {
-    has $!position = 50;
-    has $!zero-counter = 0;
-    has $!any-zero-counter = 0;
+    constant STARTING-POSITION = 50;
+
+    has Int $!position = STARTING-POSITION;
+    has Int $!zero-counter = 0;
+    has Int $!any-zero-counter = 0;
 
     method TOP ($/) {
-        make {
+        make %(
             zero-counter => $!zero-counter,
             any-zero-counter => $!any-zero-counter
-        };
+        );
     }
 
     method direction:sym<L> ($/) {
@@ -36,9 +38,13 @@ class Decoder {
 
         my $new-position = $!position + $positive-rotation;
 
-        if $!position != 0 {
-            $n-times-crossed-zero += $rotation > 0 ?? $new-position >= 100 !! $new-position <= 100;
-        }
+        my $crossed-boundary = do if $!position != 0 {
+            $rotation > 0 ?? $new-position >= 100 !! $new-position <= 100
+        } else {
+            0
+        };
+        
+        $n-times-crossed-zero += $crossed-boundary;
 
         $!position = $new-position % 100;
 
